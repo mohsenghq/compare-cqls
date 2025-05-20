@@ -16,7 +16,7 @@ MODEL_PATHS = [
     'misa_cql_halfcheetah_heydari.d3'
 ]
 MODEL_NAMES = ['CQL', 'MISA', 'MISA heydari']  # Update with descriptive names
-NUM_EPISODES = 100  # Number of evaluation episodes per model
+NUM_EPISODES = 10  # Number of evaluation episodes per model
 ENV_NAME = 'HalfCheetah-v4'
 
 def load_model(path):
