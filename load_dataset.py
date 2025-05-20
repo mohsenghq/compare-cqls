@@ -5,8 +5,10 @@ import os
 
 # Load HalfCheetah dataset from Minari
 dataset_name = 'mujoco\\halfcheetah\\medium-v0' if os.name == 'nt' else 'mujoco/halfcheetah/medium-v0'
-dataset = minari.load_dataset(dataset_name)
-
+try:
+    dataset = minari.load_dataset(dataset_name)
+except:
+    dataset = minari.load_dataset(dataset_name, download=True)
 # Convert to D3RLPY-compatible format
 observations = []
 actions = []
