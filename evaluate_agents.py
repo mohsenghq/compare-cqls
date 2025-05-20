@@ -12,9 +12,10 @@ np.random.seed(RANDOM_SEED)
 # Configuration 
 MODEL_PATHS = [
     'cql_halfcheetah.d3',  # Update with your actual file paths
-    'misa_cql_halfcheetah.d3'
+    'misa_cql_halfcheetah.d3',
+    'misa_cql_halfcheetah_heydari.d3'
 ]
-MODEL_NAMES = ['CQL', 'MISA']  # Update with descriptive names
+MODEL_NAMES = ['CQL', 'MISA', 'MISA heydari']  # Update with descriptive names
 NUM_EPISODES = 100  # Number of evaluation episodes per model
 ENV_NAME = 'HalfCheetah-v4'
 
