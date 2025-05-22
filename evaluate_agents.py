@@ -35,23 +35,26 @@ def evaluate_model(model, env_name, n_episodes=10):
     
     episode_rewards = []
     episode_lengths = []
+    step_rewards = []  # Track rewards at each step
     
     for _ in range(n_episodes):
         observation, _ = env.reset(seed=RANDOM_SEED)
         episode_reward = 0
         episode_length = 0
+        episode_step_rewards = []  # Track rewards for this episode
         done = False
         truncated = False
         
         while not (done or truncated):
-            # print(observation)
             action = model.predict(np.array([observation]))[0]
             observation, reward, done, truncated, _ = env.step(action)
             episode_reward += reward
             episode_length += 1
+            episode_step_rewards.append(reward)
         
         episode_rewards.append(episode_reward)
         episode_lengths.append(episode_length)
+        step_rewards.append(episode_step_rewards)
     
     env.close()
     
@@ -60,7 +63,8 @@ def evaluate_model(model, env_name, n_episodes=10):
         'mean_reward': np.mean(episode_rewards),
         'std_reward': np.std(episode_rewards),
         'lengths': episode_lengths,
-        'mean_length': np.mean(episode_lengths)
+        'mean_length': np.mean(episode_lengths),
+        'step_rewards': step_rewards
     }
 
 def render_model(model, env_name, n_steps=1000):
@@ -87,17 +91,17 @@ def render_model(model, env_name, n_steps=1000):
 
 def visualize_comparison(results, model_names):
     """Create visualizations comparing model performance."""
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(15, 12))
     
     # Plot reward distribution
-    plt.subplot(2, 1, 1)
+    plt.subplot(3, 1, 1)
     plt.boxplot([r['rewards'] for r in results], labels=model_names)
     plt.title('Reward Distribution Across Episodes')
     plt.ylabel('Total Episode Reward')
     plt.grid(True, linestyle='--', alpha=0.7)
     
     # Plot mean rewards with error bars
-    plt.subplot(2, 1, 2)
+    plt.subplot(3, 1, 2)
     means = [r['mean_reward'] for r in results]
     stds = [r['std_reward'] for r in results]
     x = np.arange(len(model_names))
@@ -105,6 +109,23 @@ def visualize_comparison(results, model_names):
     plt.xticks(x, model_names)
     plt.title('Mean Episode Reward')
     plt.ylabel('Reward')
+    plt.grid(True, linestyle='--', alpha=0.7)
+    
+    # Plot rewards over time
+    plt.subplot(3, 1, 3)
+    for i, result in enumerate(results):
+        # Calculate mean reward at each timestep across episodes
+        max_length = max(len(rewards) for rewards in result['step_rewards'])
+        padded_rewards = [rewards + [np.nan]*(max_length - len(rewards)) 
+                         for rewards in result['step_rewards']]
+        mean_rewards = np.nanmean(padded_rewards, axis=0)
+        steps = range(len(mean_rewards))
+        plt.plot(steps, mean_rewards, label=model_names[i])
+    
+    plt.title('Average Reward Over Time')
+    plt.xlabel('Time Steps')
+    plt.ylabel('Average Reward')
+    plt.legend()
     plt.grid(True, linestyle='--', alpha=0.7)
     
     plt.tight_layout()
