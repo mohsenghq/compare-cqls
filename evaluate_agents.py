@@ -91,17 +91,18 @@ def render_model(model, env_name, n_steps=1000):
 
 def visualize_comparison(results, model_names):
     """Create visualizations comparing model performance."""
-    plt.figure(figsize=(15, 12))
+    # Original comparison plots
+    plt.figure(figsize=(12, 8))
     
     # Plot reward distribution
-    plt.subplot(3, 1, 1)
+    plt.subplot(2, 1, 1)
     plt.boxplot([r['rewards'] for r in results], labels=model_names)
     plt.title('Reward Distribution Across Episodes')
     plt.ylabel('Total Episode Reward')
     plt.grid(True, linestyle='--', alpha=0.7)
     
     # Plot mean rewards with error bars
-    plt.subplot(3, 1, 2)
+    plt.subplot(2, 1, 2)
     means = [r['mean_reward'] for r in results]
     stds = [r['std_reward'] for r in results]
     x = np.arange(len(model_names))
@@ -111,25 +112,30 @@ def visualize_comparison(results, model_names):
     plt.ylabel('Reward')
     plt.grid(True, linestyle='--', alpha=0.7)
     
-    # Plot rewards over time
-    plt.subplot(3, 1, 3)
+    plt.tight_layout()
+    plt.savefig('model_comparison.png')
+    plt.show()
+
+    # Create new figure for cumulative rewards over time
+    plt.figure(figsize=(10, 6))
     for i, result in enumerate(results):
-        # Calculate mean reward at each timestep across episodes
+        # Calculate cumulative reward at each timestep across episodes
         max_length = max(len(rewards) for rewards in result['step_rewards'])
-        padded_rewards = [rewards + [np.nan]*(max_length - len(rewards)) 
+        padded_rewards = [rewards + [0]*(max_length - len(rewards)) 
                          for rewards in result['step_rewards']]
-        mean_rewards = np.nanmean(padded_rewards, axis=0)
-        steps = range(len(mean_rewards))
-        plt.plot(steps, mean_rewards, label=model_names[i])
+        mean_rewards = np.mean(padded_rewards, axis=0)
+        cumulative_rewards = np.cumsum(mean_rewards)
+        steps = range(len(cumulative_rewards))
+        plt.plot(steps, cumulative_rewards, label=model_names[i])
     
-    plt.title('Average Reward Over Time')
+    plt.title('Cumulative Reward Over Time')
     plt.xlabel('Time Steps')
-    plt.ylabel('Average Reward')
+    plt.ylabel('Cumulative Reward')
     plt.legend()
     plt.grid(True, linestyle='--', alpha=0.7)
     
     plt.tight_layout()
-    plt.savefig('model_comparison.png')
+    plt.savefig('cumulative_rewards.png')
     plt.show()
 
 def main():
