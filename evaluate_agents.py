@@ -17,9 +17,9 @@ np.random.seed(RANDOM_SEED)
 
 # Configuration 
 MODEL_PATHS = [
-    'cql_halfcheetah.d3',  # Update with your actual file paths
-    'misa_cql_halfcheetah.d3',
-    'misa_cql_halfcheetah_heydari.d3'
+    'weights/v2/cql_halfcheetah.d3',  # Update with your actual file paths
+    'weights/v2/misa_cql_halfcheetah.d3',
+    'weights/v2/misa_cql_halfcheetah_heydari.d3'
 ]
 MODEL_NAMES = ['CQL', 'MISA', 'MISA heydari']  # Update with descriptive names
 NUM_EPISODES = args.num_episodes  # Number of evaluation episodes per model
@@ -159,7 +159,7 @@ def main():
         print(f"  Mean episode length: {result['mean_length']:.2f}")
     
     # Compare results
-    print("\nModel Comparison:")
+    print("/nModel Comparison:")
     for i, result in enumerate(results):
         print(f"{MODEL_NAMES[i]}: {result['mean_reward']:.2f} ± {result['std_reward']:.2f}")
     
@@ -170,7 +170,7 @@ def main():
     # render_option = input("Would you like to render a demonstration of each model? (y/n): ")
     # if render_option.lower() == 'y':
     #     for i, model in enumerate(models):
-    #         print(f"\nRendering {MODEL_NAMES[i]}...")
+    #         print(f"/nRendering {MODEL_NAMES[i]}...")
     #         render_model(model, ENV_NAME)
 
 if __name__ == "__main__":
