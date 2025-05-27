@@ -79,4 +79,4 @@ if __name__ == "__main__":
     cql.fit(d3rlpy_dataset, n_steps=args.n_steps,)
 
     # Save the model
-    cql.save_model('misa_cql_halfcheetah.d3')
+    cql.save_model('weights/v2/misa_cql_halfcheetah.d3')
