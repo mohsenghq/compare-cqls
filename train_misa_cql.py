@@ -8,6 +8,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset_name', type=str, default='halfcheetah_dataset.npz')
 parser.add_argument('--n_steps', type=int, default=1_000_000)
+parser.add_argument('--batch_size', type=int, default=256)
 args = parser.parse_args()
 
 class MISACQL(d3rlpy.algos.CQL):
@@ -68,14 +69,14 @@ if __name__ == "__main__":
 
     # Create D3RLPY dataset
     d3rlpy_dataset = d3rlpy.dataset.MDPDataset(observations, actions, rewards, terminals)
-    config = d3rlpy.algos.CQLConfig(compile_graph=True)
+    config = d3rlpy.algos.CQLConfig(compile_graph=True, batch_size=args.batch_size)
     cql = MISACQL(config, device='cuda:0', enable_ddp=False, action_size=actions.shape[1])
 
     # Build the model
     cql.build_with_dataset(d3rlpy_dataset)
 
     # Train the agent
-    cql.fit(d3rlpy_dataset, n_steps=args.n_steps)
+    cql.fit(d3rlpy_dataset, n_steps=args.n_steps,)
 
     # Save the model
     cql.save_model('misa_cql_halfcheetah.d3')

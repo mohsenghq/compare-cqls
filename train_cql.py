@@ -7,6 +7,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset_name', type=str, default='halfcheetah_dataset.npz')
 parser.add_argument('--n_steps', type=int, default=1_000_000)
+parser.add_argument('--batch_size', type=int, default=256)
 args = parser.parse_args()
 
 # Load preprocessed dataset
@@ -20,7 +21,7 @@ terminals = data['terminals']
 d3rlpy_dataset = d3rlpy.dataset.MDPDataset(observations, actions, rewards, terminals)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-cql = d3rlpy.algos.CQLConfig(compile_graph=True).create(device=device)
+cql = d3rlpy.algos.CQLConfig(compile_graph=True, batch_size=args.batch_size).create(device=device)
 
 # Build the model
 cql.build_with_dataset(d3rlpy_dataset)
