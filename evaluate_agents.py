@@ -8,18 +8,18 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--num_episodes', type=int, default=10)
-parser.add_argument('--env_name', type=str, default='HalfCheetah-v4')
+parser.add_argument('--env_name', type=str, default='HalfCheetah-v5')
 args = parser.parse_args()
 
 # Set random seeds for reproducibility
-RANDOM_SEED = 42
-np.random.seed(RANDOM_SEED)
+# RANDOM_SEED = 42
+# np.random.seed(RANDOM_SEED)
 
 # Configuration 
 MODEL_PATHS = [
-    'weights/v2/cql_halfcheetah.d3',  # Update with your actual file paths
-    'weights/v2/misa_cql_halfcheetah.d3',
-    'weights/v2/misa_cql_halfcheetah_heydari.d3'
+    'weights/v1/cql_halfcheetah.d3',  # Update with your actual file paths
+    'weights/v1/misa_cql_halfcheetah.d3',
+    'weights/v1/misa_cql_halfcheetah_heydari.d3'
 ]
 MODEL_NAMES = ['CQL', 'MISA', 'MISA heydari']  # Update with descriptive names
 NUM_EPISODES = args.num_episodes  # Number of evaluation episodes per model
@@ -44,7 +44,7 @@ def evaluate_model(model, env_name, n_episodes=10):
     step_rewards = []  # Track rewards at each step
     
     for _ in range(n_episodes):
-        observation, _ = env.reset(seed=RANDOM_SEED)
+        observation, _ = env.reset()
         episode_reward = 0
         episode_length = 0
         episode_step_rewards = []  # Track rewards for this episode
@@ -79,7 +79,7 @@ def render_model(model, env_name, n_steps=1000):
         # Try to create environment with rendering
         env = gym.make(env_name, render_mode='human')
         
-        observation, _ = env.reset(seed=RANDOM_SEED)
+        observation, _ = env.reset()
         episode_reward = 0
         
         for _ in range(n_steps):
@@ -102,7 +102,7 @@ def visualize_comparison(results, model_names):
     
     # Plot reward distribution
     plt.subplot(2, 1, 1)
-    plt.boxplot([r['rewards'] for r in results], tick_labels=model_names)
+    plt.boxplot([r['rewards'] for r in results], labels=model_names)
     plt.title('Reward Distribution Across Episodes')
     plt.ylabel('Total Episode Reward')
     plt.grid(True, linestyle='--', alpha=0.7)
@@ -120,7 +120,7 @@ def visualize_comparison(results, model_names):
     
     plt.tight_layout()
     plt.savefig('model_comparison.png')
-    plt.show()
+    # plt.show()
 
     # Create new figure for cumulative rewards over time
     plt.figure(figsize=(10, 6))
@@ -142,7 +142,7 @@ def visualize_comparison(results, model_names):
     
     plt.tight_layout()
     plt.savefig('cumulative_rewards.png')
-    plt.show()
+    # plt.show()
 
 def main():
     # Load models
