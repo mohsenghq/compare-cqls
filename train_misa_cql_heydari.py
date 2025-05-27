@@ -3,6 +3,12 @@ import torch
 import numpy as np
 from d3rlpy.algos import CQLConfig
 from d3rlpy.optimizers import AdamFactory
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--dataset_name', type=str, default='halfcheetah_dataset.npz')
+parser.add_argument('--n_steps', type=int, default=1_000_000)
+args = parser.parse_args()
 
 class MISACQL(d3rlpy.algos.CQL):
     def __init__(self, config, device='cpu', enable_ddp=False, *args, **kwargs):
@@ -90,7 +96,7 @@ class MISACQL(d3rlpy.algos.CQL):
 # Example usage
 if __name__ == "__main__":
     # Load preprocessed dataset
-    data = np.load('halfcheetah_dataset.npz')
+    data = np.load(args.dataset_name)
     observations = data['observations']
     actions = data['actions']
     rewards = data['rewards']
@@ -106,7 +112,7 @@ if __name__ == "__main__":
     cql.build_with_dataset(d3rlpy_dataset)
 
     # Train the agent
-    cql.fit(d3rlpy_dataset, n_steps=100000)
+    cql.fit(d3rlpy_dataset, n_steps=args.n_steps)
 
     # Save the model
     cql.save_model('misa_cql_halfcheetah_heydari.d3')

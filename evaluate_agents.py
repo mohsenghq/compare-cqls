@@ -4,6 +4,12 @@ import gymnasium as gym
 import d3rlpy
 from d3rlpy.algos import CQL
 import torch
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--num_episodes', type=int, default=10)
+parser.add_argument('--env_name', type=str, default='HalfCheetah-v4')
+args = parser.parse_args()
 
 # Set random seeds for reproducibility
 RANDOM_SEED = 42
@@ -16,8 +22,8 @@ MODEL_PATHS = [
     'misa_cql_halfcheetah_heydari.d3'
 ]
 MODEL_NAMES = ['CQL', 'MISA', 'MISA heydari']  # Update with descriptive names
-NUM_EPISODES = 10  # Number of evaluation episodes per model
-ENV_NAME = 'HalfCheetah-v4'
+NUM_EPISODES = args.num_episodes  # Number of evaluation episodes per model
+ENV_NAME = args.env_name
 
 def load_model(path):
     """Load a CQL model from the given path."""
@@ -96,7 +102,7 @@ def visualize_comparison(results, model_names):
     
     # Plot reward distribution
     plt.subplot(2, 1, 1)
-    plt.boxplot([r['rewards'] for r in results], labels=model_names)
+    plt.boxplot([r['rewards'] for r in results], tick_labels=model_names)
     plt.title('Reward Distribution Across Episodes')
     plt.ylabel('Total Episode Reward')
     plt.grid(True, linestyle='--', alpha=0.7)

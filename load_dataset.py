@@ -2,9 +2,16 @@ import minari
 import numpy as np
 import d3rlpy
 import os
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--dataset_name', type=str, default='mujoco/halfcheetah/medium-v0')
+args = parser.parse_args()
+
+# modify dataset name for different os
+args.dataset_name = args.dataset_name.replace('/', '\\') if os.name == 'nt' else args.dataset_name.replace('\\', '/')
 # Load HalfCheetah dataset from Minari
-dataset_name = 'mujoco\\halfcheetah\\medium-v0' if os.name == 'nt' else 'mujoco/halfcheetah/medium-v0'
+dataset_name = args.dataset_name
 try:
     dataset = minari.load_dataset(dataset_name)
 except:
