@@ -4,11 +4,11 @@ import gymnasium as gym
 import d3rlpy
 from d3rlpy.algos import CQL
 import torch
-import argparse
+from config import get_shared_parser
+import glob
+import os
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--num_episodes', type=int, default=10)
-parser.add_argument('--env_name', type=str, default='HalfCheetah-v5')
+parser = get_shared_parser()
 args = parser.parse_args()
 
 # Set random seeds for reproducibility
@@ -16,12 +16,8 @@ args = parser.parse_args()
 # np.random.seed(RANDOM_SEED)
 
 # Configuration 
-MODEL_PATHS = [
-    'weights/v1/cql_halfcheetah.d3',  # Update with your actual file paths
-    'weights/v1/misa_cql_halfcheetah.d3',
-    'weights/v1/misa_cql_halfcheetah_heydari.d3'
-]
-MODEL_NAMES = ['CQL', 'MISA', 'MISA heydari']  # Update with descriptive names
+MODEL_PATHS = [f for f in glob.glob(os.path.join(args.model_path, '*.d3')) if os.path.isfile(f)]
+MODEL_NAMES = [os.path.splitext(os.path.basename(f))[0] for f in MODEL_PATHS]
 NUM_EPISODES = args.num_episodes  # Number of evaluation episodes per model
 ENV_NAME = args.env_name
 

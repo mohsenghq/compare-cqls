@@ -2,12 +2,9 @@ import d3rlpy
 import numpy as np
 from d3rlpy.optimizers import AdamFactory
 import torch
-import argparse
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--dataset_name', type=str, default='halfcheetah_dataset.npz')
-parser.add_argument('--n_steps', type=int, default=1_000_000)
-parser.add_argument('--batch_size', type=int, default=256)
+from config import get_shared_parser
+import os
+parser = get_shared_parser()
 args = parser.parse_args()
 
 # Load preprocessed dataset
@@ -30,4 +27,4 @@ cql.build_with_dataset(d3rlpy_dataset)
 cql.fit(d3rlpy_dataset, n_steps=args.n_steps)
 
 # Save model
-cql.save_model('weights/v2/cql_halfcheetah.d3')
+cql.save_model(os.path.join(args.model_path, 'cql_halfcheetah.d3'))

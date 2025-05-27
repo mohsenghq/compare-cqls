@@ -3,12 +3,10 @@ import torch
 import numpy as np
 from d3rlpy.algos import CQLConfig
 from d3rlpy.optimizers import AdamFactory
-import argparse
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--dataset_name', type=str, default='halfcheetah_dataset.npz')
-parser.add_argument('--n_steps', type=int, default=1_000_000)
-parser.add_argument('--batch_size', type=int, default=256)
+import sys
+from config import get_shared_parser
+import os
+parser = get_shared_parser()
 args = parser.parse_args()
 
 class MISACQL(d3rlpy.algos.CQL):
@@ -116,4 +114,4 @@ if __name__ == "__main__":
     cql.fit(d3rlpy_dataset, n_steps=args.n_steps)
 
     # Save the model
-    cql.save_model('weights/v2/misa_cql_halfcheetah_heydari.d3')
+    cql.save_model(os.path.join(args.model_path, 'misa_cql_halfcheetah_heydari.d3'))
