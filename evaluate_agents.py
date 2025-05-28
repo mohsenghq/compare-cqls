@@ -118,26 +118,34 @@ def visualize_comparison(results, model_names):
     plt.savefig('model_comparison.png')
     # plt.show()
 
-    # Create new figure for cumulative rewards over time
+    # New plot: mean and std of actual reward at each time step
     plt.figure(figsize=(10, 6))
     for i, result in enumerate(results):
-        # Calculate cumulative reward at each timestep across episodes
+        # Find the max episode length for padding
         max_length = max(len(rewards) for rewards in result['step_rewards'])
-        padded_rewards = [rewards + [0]*(max_length - len(rewards)) 
+        # Pad rewards with np.nan for proper mean/std calculation
+        padded_rewards = [rewards + [np.nan]*(max_length - len(rewards)) 
                          for rewards in result['step_rewards']]
-        mean_rewards = np.mean(padded_rewards, axis=0)
-        cumulative_rewards = np.cumsum(mean_rewards)
-        steps = range(len(cumulative_rewards))
-        plt.plot(steps, cumulative_rewards, label=model_names[i])
+        padded_rewards = np.array(padded_rewards)
+        mean_rewards = np.nanmean(padded_rewards, axis=0)
+        std_rewards = np.nanstd(padded_rewards, axis=0)
+        
+        # Apply moving average for smoother mean
+        window_size = 5 # Adjust window size as needed
+        smoothed_mean_rewards = np.convolve(mean_rewards, np.ones(window_size)/window_size, mode='valid')
+        steps = np.arange(len(smoothed_mean_rewards))
+        plt.plot(steps, smoothed_mean_rewards, label=model_names[i])
+        plt.fill_between(steps, smoothed_mean_rewards-std_rewards[:len(smoothed_mean_rewards)], 
+                         smoothed_mean_rewards+std_rewards[:len(smoothed_mean_rewards)], alpha=0.2)
     
-    plt.title('Cumulative Reward Over Time')
+    plt.title('Mean and Std of Reward at Each Time Step (Smoothed)')
     plt.xlabel('Time Steps')
-    plt.ylabel('Cumulative Reward')
+    plt.ylabel('Reward')
     plt.legend()
     plt.grid(True, linestyle='--', alpha=0.7)
     
     plt.tight_layout()
-    plt.savefig('cumulative_rewards.png')
+    plt.savefig('reward_time_step.png')
     # plt.show()
 
 def main():
